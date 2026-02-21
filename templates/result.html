@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" http-equiv="refresh" content="5">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nevus analyzer</title>
+</head>
+<body style="text-align:center">
+    <h1>Nevus analyzer</h1>
+    <img src="{{img}}" style="height: 50vh;">
+    <h3>
+        {% if result is string %}
+            {{ result }}
+        {% else %}
+            {% for line in result %}
+                {{ line }}<br>
+            {% endfor %}
+        {% endif %}
+    </h3>
+</body>
+</html>
