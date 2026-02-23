@@ -41,7 +41,7 @@ def prediction(img):
     5: 'Melanocytic nevi',
     6: 'Vascular lesions'
     }       
-    model = torch.load('static/prediction_model/model.pth', weights_only=False)
+    model = torch.load('static/prediction_model/model.pth', weights_only=False, map_location='cpu')
     with Image.open(img) as im:
         arr = np.asarray(im.resize((224,224)))
     pred = model.predict(arr[np.newaxis,:,:,:])
