@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" http-equiv="refresh" content="5">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if result is string %}
+        <meta charset="UTF-8" http-equiv="refresh" content="5">
+    {% else %}
+        <meta charset="UTF-8">
+    {% endif %}
     <title>Nevus analyzer</title>
 </head>
 <body style="text-align:center">
     <h1>Nevus analyzer</h1>
     <img src="{{img}}" style="height: 50vh;">
     <h3>
-        <img src="static/wait_animation.gif" style="height: 50vh;">
         {% if result is string %}
+            <img src="static/wait_animation.gif" style="height: 10vh;">
+            <br>
             {{ result }}
         {% else %}
             {% for line in result %}
