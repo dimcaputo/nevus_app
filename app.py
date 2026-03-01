@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
-os.environ["KERAS_BACKEND"] = "torch"
+
 from PIL import Image
 from flask_executor import Executor
-import torch
+import keras
 import numpy as np
 
 app = Flask(__name__)
@@ -32,27 +32,15 @@ def upload_image():
 
 @app.route('/prediction', methods=['GET', 'POST'])
 def prediction(img):
-    label_to_name = {
-    0: 'Actinic keratoses',
-    1: 'Basal cell carcinoma',
-    2: 'Benign keratosis-like lesions',
-    3: 'Dermatofibroma',
-    4: 'Melanoma',
-    5: 'Melanocytic nevi',
-    6: 'Vascular lesions'
-    }       
-    model = torch.load('static/prediction_model/model.pth', weights_only=False, map_location='cpu')
+    model = keras.saving.load_model(
+        'static/prediction_model/model.keras')
     with Image.open(img) as im:
         arr = np.asarray(im.resize((224,224)))
     pred = model.predict(arr[np.newaxis,:,:,:])
-    result_dict = {k:v.item()*100 for k,v in zip(list(label_to_name.values()), list(pred.ravel()))}
-    result_dict = dict(sorted(result_dict.items(), key=lambda x:x[1], reverse=True))
-    result = {k:v for k,v in list(result_dict.items())[:3]}
+    result = round(pred.item()*100, 1)
     pred_path = os.path.splitext(img.replace("uploads", "predictions"))[0] + '.txt'
     with open(pred_path, "w") as fp:
-        for k,v in result.items():
-            fp.write(f"{k}: {v:.2f}%")
-            fp.write("\n")
+        fp.write(f"Cancerous lesion: {result:.1f}% probability.")
     return redirect(url_for('display_prediction', img=img))
     
 @app.route('/display_prediction', methods=['GET', 'POST'])
@@ -65,7 +53,6 @@ def display_prediction():
     else:
         result = 'Prediction in progress...'
     return render_template('/result.html', img=img, result=result)
-    
 
 
 if __name__ == '__main__':
