@@ -21,6 +21,7 @@ os.makedirs(img_path.replace("uploads", "predictions"), exist_ok=True)
 @app.route("/", methods=['GET','POST'])
 def upload_image():
     if request.method == 'GET':
+        os.system("rm -rf static/predictions/*")
         return render_template('index.html')
     if request.method == 'POST':
         file = request.files['img']
@@ -38,10 +39,19 @@ def prediction(img):
     with Image.open(img) as im:
         arr = np.asarray(im.resize((224,224)))
     pred = model.predict(arr[np.newaxis,:,:,:])
-    result = round(pred.item()*100, 1)
+    result = round(pred.item()*100, 2)
     pred_path = os.path.splitext(img.replace("uploads", "predictions"))[0] + '.txt'
+    threshold = 21.52
     with open(pred_path, "w") as fp:
-        fp.write(f"There is a {result:.1f}% probability that this lesion is cancerous.")
+        if result > threshold:
+            fp.write(f"This lesion is likely cancerous.")
+            fp.write("\n")
+            fp.write(f"Probability: {result}% | Threshold: {threshold}%")
+        else:
+            fp.write(f"This lesion is likely not cancerous.")
+            fp.write("\n")
+            fp.write(f"Probability: {result}% | Threshold: {threshold}%")
+        # fp.write(f"Prediction: {result:.2f}%")
     return redirect(url_for('display_prediction', img=img))
     
 @app.route('/display_prediction', methods=['GET', 'POST'])
