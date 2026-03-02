@@ -40,7 +40,7 @@ def prediction(img):
     result = round(pred.item()*100, 1)
     pred_path = os.path.splitext(img.replace("uploads", "predictions"))[0] + '.txt'
     with open(pred_path, "w") as fp:
-        fp.write(f"Cancerous lesion: {result:.1f}% probability.")
+        fp.write(f"There is a {result:.1f}% probability that this lesion is cancerous.")
     return redirect(url_for('display_prediction', img=img))
     
 @app.route('/display_prediction', methods=['GET', 'POST'])
@@ -57,4 +57,4 @@ def display_prediction():
 
 if __name__ == '__main__':
 
-    app.run(host = '0.0.0.0', port=5000)
+    app.run(host = '0.0.0.0', port=5050)
