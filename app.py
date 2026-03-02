@@ -4,6 +4,7 @@ import os
 
 from PIL import Image
 from flask_executor import Executor
+os.environ["KERAS_BACKEND"] = "torch"
 import keras
 import numpy as np
 
